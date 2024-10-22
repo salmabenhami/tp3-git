@@ -1,0 +1,53 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # Étape de build
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build code
+        run: |
+          echo "Building the project using test.js..."
+          node test.js  # Exécuter le fichier test.js pour le build
+
+  # Étape de test unitaire
+  unit-test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'  # Utilisation de Node.js 20
+
+      - name: Run unit tests
+        run: |
+          echo "Running unit tests..."
+          node test.js  # Assure-toi que le fichier test.js contient ton code de tests unitaires
+
+  # Étape de déploiement
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [unit-test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Deploy the application
+        run: |
+          echo "Deploying test.js..."
+          #scp test.js user@remote:/path/to/deploy  # Déployer le fichier test.js
